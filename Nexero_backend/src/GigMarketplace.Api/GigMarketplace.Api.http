@@ -1,0 +1,6 @@
+@GigMarketplace.Api_HostAddress = http://localhost:5097
+
+GET {{GigMarketplace.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

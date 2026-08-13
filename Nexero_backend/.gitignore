@@ -1,0 +1,38 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+*.swp
+
+## Secrets — never commit these
+appsettings.Production.json
+appsettings.Staging.json
+secrets.json
+
+## EF Core tools output
+*.db
+*.db-shm
+*.db-wal
+
+## Docker volumes (local data)
+pgdata/
+
+## Rider / JetBrains
+.idea/
+*.DotSettings.user
+
+## VS Code
+.vscode/
+!.vscode/tasks.json
+!.vscode/launch.json
+
+## Build artifacts
+publish/
+*.nupkg
+
+## OS
+.DS_Store
+Thumbs.db
+desktop.ini

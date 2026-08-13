@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/GigMarketplace.Api/GigMarketplace.Api.csproj" />
+    <Project Path="src/GigMarketplace.Domain/GigMarketplace.Domain.csproj" />
+    <Project Path="src/GigMarketplace.Infrastructure/GigMarketplace.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/GigMarketplace.Tests/GigMarketplace.Tests.csproj" />
+  </Folder>
+</Solution>

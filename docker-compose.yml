@@ -1,0 +1,77 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Nexero — root docker-compose.yml
+#
+# Starts all services together:
+#   postgres        → database (port 5432)
+#   matching-service → Python ML API (port 8000)
+#   backend         → .NET API (port 5097)
+#
+# Usage:
+#   docker compose up --build        # first run (builds images)
+#   docker compose up                # subsequent runs
+#   docker compose down              # stop everything
+#   docker compose up matching-service --build  # rebuild just the ML service
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+
+  # ── PostgreSQL ──────────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: gigmarketplace
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ── Matching Service (Python / FastAPI) ─────────────────────────────────────
+  matching-service:
+    build:
+      context: ./matching-service
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      MODEL_NAME: all-MiniLM-L6-v2
+      PORT: "8000"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── .NET Backend ────────────────────────────────────────────────────────────
+  # NOTE: uncomment this block once you've added a Dockerfile to Nexero_backend.
+  # The backend is currently run with `dotnet run` locally during development.
+  #
+  # backend:
+  #   build:
+  #     context: ./Nexero_backend
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "5097:5097"
+  #   environment:
+  #     ASPNETCORE_ENVIRONMENT: Development
+  #     ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=gigmarketplace;Username=postgres;Password=postgres"
+  #     Jwt__Key: "NexeroDevSecretKey_ChangeThisInProduction_AtLeast32Chars!!"
+  #     Jwt__Issuer: GigMarketplace
+  #     Jwt__Audience: GigMarketplace
+  #     MatchingService__BaseUrl: "http://matching-service:8000"
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     matching-service:
+  #       condition: service_healthy
+
+volumes:
+  pgdata:

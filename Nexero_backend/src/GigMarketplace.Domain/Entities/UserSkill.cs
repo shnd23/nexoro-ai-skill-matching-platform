@@ -1,0 +1,14 @@
+using GigMarketplace.Domain.Enums;
+
+namespace GigMarketplace.Domain.Entities;
+
+public class UserSkill
+{
+    public Guid UserId { get; set; }
+    public User User { get; set; } = null!;
+
+    public Guid SkillId { get; set; }
+    public Skill Skill { get; set; } = null!;
+
+    public ProficiencyLevel? ProficiencyLevel { get; set; }
+}

@@ -1,0 +1,15 @@
+# Matching Service Dependencies
+# ─────────────────────────────────────────────────────────────────────────────
+# Pinned versions work best on Python 3.11 (all have pre-built wheels).
+# On Python 3.12+ you may need to install from source — use a venv with 3.11.
+# ─────────────────────────────────────────────────────────────────────────────
+
+fastapi==0.111.0
+uvicorn[standard]==0.29.0
+sentence-transformers==3.0.1
+scikit-learn==1.5.2
+numpy==1.26.4
+pydantic==2.7.1
+python-dotenv==1.0.1
+pytest==8.2.0
+httpx==0.27.0
