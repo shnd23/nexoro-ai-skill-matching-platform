@@ -9,34 +9,34 @@ Built with production-grade architecture across three separate services: a .NET 
 ## Architecture
 
 ```
-                        ┌─────────────────────────────────────────────────────────────────┐
-                        │                        Browser (Next.js)                        │
-                        │                    TypeScript · Tailwind CSS                    │
-                        │       Auth Context · Typed API Client · Server Components       │
-                        └────────────────────────────────┬────────────────────────────────┘
-                                                        │ HTTP (proxied via Next.js rewrite)
-                                                        ▼
-                        ┌─────────────────────────────────────────────────────────────────┐
-                        │                        .NET 10 REST API                         │
-                        │                  Clean Architecture (3 layers)                  │
-                        │                                                                 │
-                        │    Domain             Infrastructure            Api             │
-                        │    ─────────          ──────────────────        ─────           │
-                        │    Entities           EF Core (Postgres)        Controllers     │
-                        │    Interfaces         ASP.NET Identity          JWT Auth        │
-                        │    Records            Repositories              Google OAuth    │
-                        │                       HybridMatchingService     Swagger         │
-                        └──────────┬───────────────────────────────────────────┬──────────┘
-                                  │ POST /rank (HTTP JSON)                    │ SQL
-                                  ▼                                           ▼
-                        ┌─────────────────────┐                     ┌─────────────────────┐
-                        │   Python FastAPI    │                     │    PostgreSQL 16    │
-                        │  Matching Service   │                     │                     │
-                        │                     │                     │  Users              │
-                        │  SBERT Embeddings   │                     │  GigRequests        │
-                        │  Cosine Similarity  │                     │  Skills             │
-                        │  384-dim vectors    │                     │  Matches            │
-                        └─────────────────────┘                     └─────────────────────┘
+              ┌─────────────────────────────────────────────────────────────────┐
+              │                        Browser (Next.js)                        │
+              │                    TypeScript · Tailwind CSS                    │
+              │       Auth Context · Typed API Client · Server Components       │
+              └────────────────────────────────┬────────────────────────────────┘
+                                               │ HTTP (proxied via Next.js rewrite)
+                                               ▼
+              ┌─────────────────────────────────────────────────────────────────┐
+              │                        .NET 10 REST API                         │
+              │                  Clean Architecture (3 layers)                  │
+              │                                                                 │
+              │    Domain             Infrastructure            Api             │
+              │    ─────────          ──────────────────        ─────           │
+              │    Entities           EF Core (Postgres)        Controllers     │
+              │    Interfaces         ASP.NET Identity          JWT Auth        │
+              │    Records            Repositories              Google OAuth    │
+              │                       HybridMatchingService     Swagger         │
+              └──────────┬───────────────────────────────────────────┬──────────┘
+                         │ POST /rank (HTTP JSON)                    │ SQL
+                         ▼                                           ▼
+              ┌─────────────────────┐                     ┌─────────────────────┐
+              │   Python FastAPI    │                     │    PostgreSQL 16    │
+              │  Matching Service   │                     │                     │
+              │                     │                     │  Users              │
+              │  SBERT Embeddings   │                     │  GigRequests        │
+              │  Cosine Similarity  │                     │  Skills             │
+              │  384-dim vectors    │                     │  Matches            │
+              └─────────────────────┘                     └─────────────────────┘
 ```
 
 ### How matching works
