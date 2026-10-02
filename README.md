@@ -8,35 +8,19 @@ Built with production-grade architecture across three separate services: a .NET 
 
 ## Architecture
 
-```
-                  ┌─────────────────────────────────────────────────────────────────┐
-                  │                        Browser (Next.js)                        │
-                  │                    TypeScript · Tailwind CSS                    │
-                  │       Auth Context · Typed API Client · Server Components       │
-                  └────────────────────────────────┬────────────────────────────────┘
-                                                  │ HTTP (proxied via Next.js rewrite)
-                                                  ▼
-                  ┌─────────────────────────────────────────────────────────────────┐
-                  │                        .NET 10 REST API                         │
-                  │                  Clean Architecture (3 layers)                  │
-                  │                                                                 │
-                  │    Domain             Infrastructure            Api             │
-                  │    ─────────          ──────────────────        ─────           │
-                  │    Entities           EF Core (Postgres)        Controllers     │
-                  │    Interfaces         ASP.NET Identity          JWT Auth        │
-                  │    Records            Repositories              Google OAuth    │
-                  │                       HybridMatchingService     Swagger         │
-                  └──────────┬───────────────────────────────────────────┬──────────┘
-                            │ POST /rank (HTTP JSON)                    │ SQL
-                            ▼                                           ▼
-                  ┌─────────────────────┐                     ┌─────────────────────┐
-                  │   Python FastAPI    │                     │    PostgreSQL 16    │
-                  │  Matching Service   │                     │                     │
-                  │                     │                     │  Users              │
-                  │  SBERT Embeddings   │                     │  GigRequests        │
-                  │  Cosine Similarity  │                     │  Skills             │
-                  │  384-dim vectors    │                     │  Matches            │
-                  └─────────────────────┘                     └─────────────────────┘
+```mermaid
+flowchart TD
+    FE["**Browser — Next.js**\nTypeScript · Tailwind CSS\nAuth Context · Typed API Client · Server Components"]
+
+    BE["**\.NET 10 REST API** — Clean Architecture\n──────────────────────────────────────────\n**Domain** · Entities · Interfaces · Records\n**Infrastructure** · EF Core · ASP\.NET Identity · Repositories · HybridMatchingService\n**Api** · Controllers · JWT Auth · Google OAuth · Swagger"]
+
+    ML["**Python FastAPI**\nMatching Service\n─────────────────\nSBERT Embeddings\nCosine Similarity\n384-dim vectors"]
+
+    DB[("**PostgreSQL 16**\n─────────────────\nUsers\nGigRequests\nSkills\nMatches")]
+
+    FE -->|"HTTP — proxied via Next.js rewrite"| BE
+    BE -->|"POST /rank — HTTP JSON"| ML
+    BE -->|"SQL"| DB
 ```
 
 ### How matching works
