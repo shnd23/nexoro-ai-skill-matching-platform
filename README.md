@@ -10,17 +10,22 @@ Built with production-grade architecture across three separate services: a .NET 
 
 ```mermaid
 flowchart TD
-    FE["**Browser — Next.js**\nTypeScript · Tailwind CSS\nAuth Context · Typed API Client · Server Components"]
+    FE["Browser — Next.js\nTypeScript · Tailwind CSS\nAuth Context · Typed API Client · Server Components"]
 
-    BE["**\.NET 10 REST API** — Clean Architecture\n──────────────────────────────────────────\n**Domain** · Entities · Interfaces · Records\n**Infrastructure** · EF Core · ASP\.NET Identity · Repositories · HybridMatchingService\n**Api** · Controllers · JWT Auth · Google OAuth · Swagger"]
+    BE[".NET 10 REST API — Clean Architecture\n\nDomain · Entities · Interfaces · Records\nInfrastructure · EF Core · ASP.NET Identity · Repositories · HybridMatchingService\nApi · Controllers · JWT Auth · Google OAuth · Swagger"]
 
-    ML["**Python FastAPI**\nMatching Service\n─────────────────\nSBERT Embeddings\nCosine Similarity\n384-dim vectors"]
+    ML["Python FastAPI — Matching Service\n\nSBERT Embeddings\nCosine Similarity · 384-dim vectors"]
 
-    DB[("**PostgreSQL 16**\n─────────────────\nUsers\nGigRequests\nSkills\nMatches")]
+    DB[("PostgreSQL 16\n\nUsers · GigRequests\nSkills · Matches")]
 
     FE -->|"HTTP — proxied via Next.js rewrite"| BE
-    BE -->|"POST /rank — HTTP JSON"| ML
+    BE -->|"POST /rank  HTTP JSON"| ML
     BE -->|"SQL"| DB
+
+    style FE fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e3a5f
+    style BE fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#14532d
+    style ML fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#78350f
+    style DB fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#3b0764
 ```
 
 ### How matching works
