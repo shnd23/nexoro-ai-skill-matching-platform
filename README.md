@@ -1,8 +1,10 @@
 ﻿# Nexero
 
+**A full-stack AI-powered gig marketplace.** Users post what they need, the platform matches them with people whose skills fit, using a hybrid ranking engine that blends tag overlap with semantic similarity from a fine-tuned SBERT model.
+
 ![Nexero](docs/preview.png)
 
-**A full-stack AI-powered gig marketplace.** Users post what they need, the platform matches them with people whose skills fit, using a hybrid ranking engine that blends tag overlap with semantic similarity from a fine-tuned SBERT model.
+
 
 Built with production-grade architecture across three separate services: a .NET REST API following Clean Architecture, a Python FastAPI ML inference microservice, and a Next.js frontend. Orchestrated with Docker Compose.
 
