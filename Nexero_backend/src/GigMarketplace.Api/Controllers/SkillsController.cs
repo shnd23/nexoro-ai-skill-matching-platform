@@ -1,4 +1,4 @@
-using GigMarketplace.Api.DTOs.Skills;
+﻿using GigMarketplace.Api.DTOs.Skills;
 using GigMarketplace.Domain.Entities;
 using GigMarketplace.Domain.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -31,7 +31,6 @@ public class SkillsController : ControllerBase
 
         var trimmed = request.Name.Trim();
 
-        // Return existing if it exists (case-insensitive)
         var existing = await _skillRepo.GetByNameAsync(trimmed);
         if (existing != null)
             return Ok(new SkillDto { Id = existing.Id, Name = existing.Name });

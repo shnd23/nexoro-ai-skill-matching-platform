@@ -1,20 +1,8 @@
-"""
-Tests for app/ranker.py
-
-These tests verify that:
-- rank_candidates correctly orders candidates by semantic relevance
-- edge cases (empty list, single candidate) are handled gracefully
-- scores are within the valid 0.0–1.0 range
-"""
-from app.ranker import rank_candidates
+﻿from app.ranker import rank_candidates
 from app.schemas import Candidate
 
-
 def test_rank_returns_correct_order():
-    """
-    Frontend candidates should rank above a ML candidate
-    when the query is about frontend development.
-    """
+
     candidates = [
         Candidate(user_id="user-1", profile_text="Python machine learning data science NLP"),
         Candidate(user_id="user-2", profile_text="React frontend JavaScript UI design"),
@@ -25,29 +13,26 @@ def test_rank_returns_correct_order():
         candidates=candidates,
     )
     assert len(results) == 3
-    # user-2 and user-3 should both rank above user-1 (the ML candidate)
+
     top_ids = [r.user_id for r in results[:2]]
     assert "user-1" not in top_ids, (
         f"ML candidate should not be in top-2 for a frontend query. Got: {top_ids}"
     )
 
-
 def test_rank_empty_candidates():
-    """Empty input → empty output, no crash."""
+
     results = rank_candidates("some query text", [])
     assert results == []
 
-
 def test_rank_single_candidate():
-    """Single candidate should always be returned with a valid score."""
+
     candidates = [Candidate(user_id="u1", profile_text="React developer")]
     results = rank_candidates("Need a React developer", candidates)
     assert len(results) == 1
     assert results[0].user_id == "u1"
 
-
 def test_rank_scores_in_valid_range():
-    """Cosine similarity on normalized embeddings must be in [0, 1]."""
+
     candidates = [
         Candidate(user_id="u1", profile_text="React developer"),
         Candidate(user_id="u2", profile_text="Python data scientist"),
@@ -56,9 +41,8 @@ def test_rank_scores_in_valid_range():
     for r in results:
         assert 0.0 <= r.similarity <= 1.0, f"Score out of range: {r.similarity}"
 
-
 def test_rank_sorted_descending():
-    """Results must always be in descending order of similarity."""
+
     candidates = [
         Candidate(user_id="u1", profile_text="Python machine learning"),
         Candidate(user_id="u2", profile_text="React frontend JavaScript"),

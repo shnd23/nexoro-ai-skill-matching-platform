@@ -1,4 +1,4 @@
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using GigMarketplace.Api.DTOs.Matches;
 using GigMarketplace.Domain.Enums;
 using GigMarketplace.Domain.Interfaces;
@@ -36,7 +36,6 @@ public class MatchesController : ControllerBase
         match.Status = MatchStatus.Accepted;
         await _matchRepo.UpdateAsync(match);
 
-        // Update gig status to Matched
         var gig = await _gigRepo.GetByIdAsync(match.GigRequestId);
         if (gig != null && gig.Status == GigRequestStatus.Open)
         {

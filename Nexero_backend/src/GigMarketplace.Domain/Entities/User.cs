@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 
 namespace GigMarketplace.Domain.Entities;
 
@@ -10,7 +10,6 @@ public class User : IdentityUser<Guid>
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public bool IsExternalLogin { get; set; } = false;
 
-    // Navigation
     public ICollection<UserSkill> SkillsOffered { get; set; } = new List<UserSkill>();
     public ICollection<GigRequest> GigRequests { get; set; } = new List<GigRequest>();
     public ICollection<Match> MatchesAsCandidate { get; set; } = new List<Match>();

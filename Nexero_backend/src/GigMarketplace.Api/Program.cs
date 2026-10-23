@@ -1,4 +1,4 @@
-using System.Text;
+﻿using System.Text;
 using GigMarketplace.Domain.Entities;
 using GigMarketplace.Domain.Interfaces;
 using GigMarketplace.Infrastructure.Data;
@@ -12,11 +12,9 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ─── Database ─────────────────────────────────────
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// ─── ASP.NET Core Identity ────────────────────────
 builder.Services.AddIdentity<User, IdentityRole<Guid>>(options =>
 {
     options.Password.RequireDigit = false;
@@ -29,7 +27,6 @@ builder.Services.AddIdentity<User, IdentityRole<Guid>>(options =>
 .AddEntityFrameworkStores<AppDbContext>()
 .AddDefaultTokenProviders();
 
-// ─── JWT Authentication ───────────────────────────
 var jwtKey = builder.Configuration["Jwt:Key"] ?? throw new InvalidOperationException("Jwt:Key must be configured");
 var jwtIssuer = builder.Configuration["Jwt:Issuer"] ?? "GigMarketplace";
 var jwtAudience = builder.Configuration["Jwt:Audience"] ?? "GigMarketplace";
@@ -54,30 +51,24 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// ─── Repositories & Services (DI) ─────────────────
 builder.Services.AddScoped<ISkillRepository, SkillRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IGigRequestRepository, GigRequestRepository>();
 builder.Services.AddScoped<IMatchRepository, MatchRepository>();
 
-// HybridMatchingService calls the Python matching service over HTTP.
-// Falls back to tag-overlap-only if the Python service is unreachable.
 builder.Services.AddHttpClient("MatchingService", client =>
 {
     client.Timeout = TimeSpan.FromSeconds(10);
 });
 builder.Services.AddScoped<IMatchingService, HybridMatchingService>();
 
-// ─── Controllers ──────────────────────────────────
 builder.Services.AddControllers();
 
-// ─── Swagger ──────────────────────────────────────
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Nexero API", Version = "v1" });
 
-    // Add JWT auth to Swagger UI
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -99,7 +90,6 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// ─── CORS (for frontend) ─────────────────────────
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
@@ -113,7 +103,6 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// ─── Middleware Pipeline ──────────────────────────
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -125,7 +114,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-// ─── Seed skills (dev-only) ───────────────────────
 if (app.Environment.IsDevelopment())
 {
     using var scope = app.Services.CreateScope();

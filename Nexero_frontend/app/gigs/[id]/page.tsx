@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
@@ -59,7 +59,7 @@ export default function GigDetailPage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
-      {/* Back */}
+
       <motion.div
         initial={{ opacity: 0, x: -10 }}
         animate={{ opacity: 1, x: 0 }}
@@ -73,14 +73,13 @@ export default function GigDetailPage() {
         </button>
       </motion.div>
 
-      {/* Gig Detail Card */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
         className="glass-card p-8 mb-8"
       >
-        {/* Author Row */}
+
         <div className="flex items-center gap-4 mb-6">
           <div className="w-14 h-14 rounded-full bg-gradient-to-br from-accent/80 to-cyan/80 flex items-center justify-center text-lg font-bold text-white">
             {getInitials(gig.author.displayName)}
@@ -96,24 +95,20 @@ export default function GigDetailPage() {
           </span>
         </div>
 
-        {/* Title */}
         <h1 className="text-2xl font-display font-bold text-slate-100 mb-4">
           {gig.title}
         </h1>
 
-        {/* Description */}
         <p className="text-sm text-slate-300 leading-relaxed mb-6 whitespace-pre-wrap">
           {gig.description}
         </p>
 
-        {/* Skills */}
         <div className="flex flex-wrap gap-2 mb-6">
           {gig.requiredSkills.map(skill => (
             <SkillChip key={skill.id} skill={skill} />
           ))}
         </div>
 
-        {/* Meta */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6 border-t border-white/5">
           <div className="flex items-center gap-2">
             <DollarSign className="w-4 h-4 text-emerald-400" />
@@ -146,7 +141,6 @@ export default function GigDetailPage() {
         </div>
       </motion.div>
 
-      {/* Matches Section */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

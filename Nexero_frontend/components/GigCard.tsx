@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import Link from 'next/link';
@@ -35,7 +35,7 @@ export function GigCard({ gig, matchScore, showActions = true }: GigCardProps) {
     <Link href={`/gigs/${gig.id}`} className="block group outline-none">
       <div className="bg-white border border-[#e2ddd5] hover:border-[#c8c2b8] hover:shadow-sm transition-all duration-200 rounded-2xl overflow-hidden">
         <div className="p-5 sm:p-6">
-          {/* Author row */}
+
           <div className="flex items-center justify-between gap-4 mb-4">
             <div className="flex items-center gap-2.5 min-w-0">
               <Avatar className="h-8 w-8 shrink-0">
@@ -61,24 +61,20 @@ export function GigCard({ gig, matchScore, showActions = true }: GigCardProps) {
             </div>
           </div>
 
-          {/* Title */}
           <h3 className="text-base font-bold text-zinc-900 mb-1.5 leading-snug group-hover:text-[#92400e] transition-colors duration-200 line-clamp-2">
             {gig.title}
           </h3>
 
-          {/* Description */}
           <p className="text-sm text-zinc-500 leading-relaxed mb-4 line-clamp-2 font-light">
             {gig.description}
           </p>
 
-          {/* Skills */}
           <div className="flex flex-wrap gap-1.5 mb-4">
             {gig.requiredSkills.map(skill => (
               <SkillChip key={skill.id} skill={skill} size="sm" />
             ))}
           </div>
 
-          {/* Footer */}
           <div className="flex items-center justify-between pt-3.5 border-t border-[#f0ece6]">
             <div className="flex items-center gap-3">
               {gig.budget && (

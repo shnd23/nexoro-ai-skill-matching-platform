@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { Search, Zap, Briefcase, TrendingUp, Clock } from 'lucide-react';
@@ -27,14 +27,12 @@ export default function FeedPage() {
   const [selectedSkill, setSelectedSkill] = useState<string>('all');
   const [showCount, setShowCount] = useState(8);
 
-  // Redirect if not logged in
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       router.push('/login');
     }
   }, [isLoading, isAuthenticated, router]);
 
-  // Fetch feed from real API
   useEffect(() => {
     if (!isAuthenticated) return;
     setFetching(true);
@@ -44,7 +42,6 @@ export default function FeedPage() {
       .finally(() => setFetching(false));
   }, [isAuthenticated]);
 
-  // Unique skills across all feed items (for filter dropdown)
   const feedSkills = useMemo(() => {
     const seen = new Map<string, string>();
     feedItems.forEach(item =>
@@ -53,13 +50,11 @@ export default function FeedPage() {
     return Array.from(seen.entries()).map(([id, name]) => ({ id, name }));
   }, [feedItems]);
 
-  // Suggested matches (score > 0, status = Suggested) shown first
   const suggestedItems = useMemo(
     () => feedItems.filter(i => i.status === 'Suggested').sort((a, b) => b.score - a.score),
     [feedItems]
   );
 
-  // Filter by search + skill
   const filteredItems = useMemo(() => {
     let items = feedItems;
     if (searchQuery) {
@@ -96,7 +91,6 @@ export default function FeedPage() {
     <div className="bg-[#f7f4f0] min-h-[calc(100vh-56px)] w-full">
       <div className="max-w-5xl mx-auto px-4 py-12">
 
-        {/* Header */}
         <div className="mb-10">
           <p className="text-xs font-semibold uppercase tracking-widest text-[#92400e] mb-3">Your Feed</p>
           <h1 className="text-4xl md:text-5xl font-bold text-zinc-900 tracking-tight mb-3">
@@ -107,7 +101,6 @@ export default function FeedPage() {
           </p>
         </div>
 
-        {/* Stats Row */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-10">
           <StatsCard icon={Zap} value={suggestedItems.length} label="Active Matches" color="accent" index={0} />
           <StatsCard icon={Briefcase} value={feedItems.length} label="Available Gigs" color="cyan" index={1} />
@@ -121,7 +114,6 @@ export default function FeedPage() {
           <StatsCard icon={Clock} value="Live" label="Match Updates" color="amber" index={3} />
         </div>
 
-        {/* Search & Filter */}
         <div className="mb-8 flex flex-col sm:flex-row gap-0 bg-white border border-[#e2ddd5] rounded-2xl overflow-hidden shadow-sm">
           <div className="relative flex-1">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
@@ -148,7 +140,6 @@ export default function FeedPage() {
           </div>
         </div>
 
-        {/* Feed */}
         {filteredItems.length === 0 ? (
           <div className="bg-white border border-[#e2ddd5] border-dashed rounded-2xl p-16 text-center">
             <Search className="w-10 h-10 text-[#c8c2b8] mx-auto mb-4" />

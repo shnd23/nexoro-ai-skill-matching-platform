@@ -1,4 +1,4 @@
-using GigMarketplace.Domain.Enums;
+﻿using GigMarketplace.Domain.Enums;
 
 namespace GigMarketplace.Domain.Entities;
 
@@ -15,7 +15,6 @@ public class GigRequest
     public string? Timeframe { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-    // Navigation
     public ICollection<GigRequestSkill> RequiredSkills { get; set; } = new List<GigRequestSkill>();
     public ICollection<Match> Matches { get; set; } = new List<Match>();
 }

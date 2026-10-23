@@ -1,11 +1,10 @@
-'use client';
+﻿'use client';
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
 import { Button } from '@/components/ui/button';
 
-// The Google Client ID — must match what's in the backend's appsettings
 const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '';
 
 function GoogleIcon() {
@@ -19,7 +18,6 @@ function GoogleIcon() {
   );
 }
 
-// Extend the global Window type with Google's GIS types
 declare global {
   interface Window {
     google?: {

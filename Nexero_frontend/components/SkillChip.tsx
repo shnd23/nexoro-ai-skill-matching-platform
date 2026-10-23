@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import { Skill } from '@/lib/types';
@@ -14,8 +14,8 @@ interface SkillChipProps {
 
 export function SkillChip({ skill, removable, onRemove, size = 'md' }: SkillChipProps) {
   return (
-    <Badge 
-      variant="secondary" 
+    <Badge
+      variant="secondary"
       className={`bg-[#f0ece6] text-zinc-700 hover:bg-[#e8e4de] border border-[#e2ddd5] transition-colors ${size === 'sm' ? 'px-2 py-0.5 text-[11px]' : 'px-3 py-1 text-xs'} whitespace-nowrap gap-1 rounded-full font-medium`}
     >
       {skill.name}

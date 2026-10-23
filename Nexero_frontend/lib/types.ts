@@ -1,8 +1,4 @@
-// ============================================
-// Nexus — Core TypeScript Interfaces
-// ============================================
-
-export type ProficiencyLevel = 'Beginner' | 'Intermediate' | 'Expert';
+﻿export type ProficiencyLevel = 'Beginner' | 'Intermediate' | 'Expert';
 export type GigStatus = 'Open' | 'Matched' | 'Closed';
 export type MatchStatus = 'Suggested' | 'Accepted' | 'Declined';
 

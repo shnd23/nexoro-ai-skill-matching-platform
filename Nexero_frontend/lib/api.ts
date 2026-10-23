@@ -1,15 +1,5 @@
-// ============================================
-// Nexero — Typed API Client
-// All backend calls go through here.
-// The Next.js proxy (next.config.mjs) forwards
-//   /api/backend/* → http://localhost:5097/api/*
-// so the browser never sees a cross-origin request.
-// ============================================
-
-const BASE = '/api/backend';
+﻿const BASE = '/api/backend';
 const TOKEN_KEY = 'nexero_jwt';
-
-// ─── Token helpers ────────────────────────────────────────────────────────────
 
 export function getToken(): string | null {
   if (typeof window === 'undefined') return null;
@@ -23,8 +13,6 @@ export function setToken(token: string) {
 export function clearToken() {
   localStorage.removeItem(TOKEN_KEY);
 }
-
-// ─── Core fetch wrapper ───────────────────────────────────────────────────────
 
 interface RequestOptions {
   method?: string;
@@ -54,7 +42,7 @@ async function request<T>(path: string, opts: RequestOptions = {}): Promise<T> {
   const data = await res.json().catch(() => null);
 
   if (!res.ok) {
-    // Surface the backend's error message if there is one
+
     const message =
       data?.message ||
       data?.errors?.[0] ||
@@ -64,8 +52,6 @@ async function request<T>(path: string, opts: RequestOptions = {}): Promise<T> {
 
   return data as T;
 }
-
-// ─── Types (mirrors backend DTOs) ────────────────────────────────────────────
 
 export interface ApiUser {
   id: string;
@@ -126,8 +112,6 @@ export interface AuthResponse {
   user: { id: string; email: string; displayName: string };
 }
 
-// ─── Auth endpoints ───────────────────────────────────────────────────────────
-
 export const auth = {
   register: (email: string, password: string, displayName: string) =>
     request<AuthResponse>('/auth/register', {
@@ -151,8 +135,6 @@ export const auth = {
     }),
 };
 
-// ─── User endpoints ───────────────────────────────────────────────────────────
-
 export const users = {
   me: () => request<ApiUser>('/users/me'),
 
@@ -169,8 +151,6 @@ export const users = {
     request<void>(`/users/me/skills/${skillId}`, { method: 'DELETE' }),
 };
 
-// ─── Skills endpoints ─────────────────────────────────────────────────────────
-
 export const skills = {
   search: (query: string) =>
     request<ApiSkill[]>(`/skills?query=${encodeURIComponent(query)}`),
@@ -178,8 +158,6 @@ export const skills = {
   createOrGet: (name: string) =>
     request<ApiSkill>('/skills', { method: 'POST', body: { name } }),
 };
-
-// ─── Gig Request endpoints ────────────────────────────────────────────────────
 
 export const gigs = {
   mine: () => request<ApiGigRequest[]>('/gigrequests/mine'),
@@ -199,13 +177,9 @@ export const gigs = {
     request<ApiMatch[]>(`/gigrequests/${gigId}/matches`),
 };
 
-// ─── Feed endpoints ───────────────────────────────────────────────────────────
-
 export const feed = {
   get: () => request<ApiFeedItem[]>('/feed'),
 };
-
-// ─── Match endpoints ──────────────────────────────────────────────────────────
 
 export const matches = {
   accept: (matchId: string) =>

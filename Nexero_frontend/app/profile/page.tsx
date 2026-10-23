@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -28,7 +28,6 @@ export default function ProfilePage() {
   const [editSkills, setEditSkills] = useState<Skill[]>([]);
   const [saving, setSaving] = useState(false);
 
-  // Stats from API
   const [myGigsCount, setMyGigsCount] = useState(0);
   const [myMatchesCount, setMyMatchesCount] = useState(0);
   const [acceptedCount, setAcceptedCount] = useState(0);
@@ -39,7 +38,6 @@ export default function ProfilePage() {
     }
   }, [isLoading, isAuthenticated, router]);
 
-  // Fetch stats from real API
   useEffect(() => {
     if (!isAuthenticated) return;
     Promise.all([
@@ -52,7 +50,6 @@ export default function ProfilePage() {
     });
   }, [isAuthenticated]);
 
-  // Sync local edit state when user loads
   useEffect(() => {
     if (user) {
       setBio(user.bio ?? '');
@@ -76,13 +73,12 @@ export default function ProfilePage() {
   }
 
   async function handleSave() {
-    if (!user) return; // type guard — user is always present here but satisfies TS
+    if (!user) return;
     setSaving(true);
     try {
-      // 1. Update bio / displayName
+
       await usersApi.update({ bio });
 
-      // 2. Diff skills: figure out what was added and what was removed
       const currentSkillIds = new Set(user.skillsOffered.map(us => us.skillId));
       const newSkillIds = new Set(editSkills.map(s => s.id));
 
@@ -94,7 +90,6 @@ export default function ProfilePage() {
         ...toRemove.map(us => usersApi.removeSkill(us.skillId)),
       ]);
 
-      // 3. Fetch fresh user data and update context
       const updated = await usersApi.me();
       updateUser({
         bio: updated.bio ?? '',
@@ -121,19 +116,17 @@ export default function ProfilePage() {
     <div className="bg-[#f7f4f0] min-h-[calc(100vh-56px)] w-full py-12">
       <div className="max-w-4xl mx-auto px-4">
 
-        {/* Header */}
         <div className="mb-10">
           <p className="text-xs font-semibold uppercase tracking-widest text-[#92400e] mb-3">Account</p>
           <h1 className="text-4xl font-bold text-zinc-900 tracking-tight mb-2">Your Profile.</h1>
           <p className="text-zinc-500 font-light">Manage your personal details and listed skills.</p>
         </div>
 
-        {/* Profile Card */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="mb-8">
           <div className="bg-white border border-[#e2ddd5] rounded-2xl overflow-hidden shadow-sm">
             <div className="p-7 sm:p-8">
               <div className="flex flex-col sm:flex-row items-start gap-7">
-                {/* Avatar */}
+
                 <div className="relative shrink-0 mx-auto sm:mx-0">
                   <Avatar className="h-24 w-24 border-4 border-[#f0ece6]">
                     <AvatarFallback className="bg-[#e8e4de] text-2xl font-bold text-zinc-600">
@@ -145,7 +138,6 @@ export default function ProfilePage() {
                   </div>
                 </div>
 
-                {/* Info */}
                 <div className="flex-1 min-w-0 w-full">
                   <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-7">
                     <div className="text-center sm:text-left">
@@ -180,7 +172,7 @@ export default function ProfilePage() {
                   </div>
 
                   <div className="space-y-7">
-                    {/* Bio */}
+
                     <div>
                       <label className="flex items-center gap-1.5 text-xs font-bold text-zinc-900 mb-3 uppercase tracking-wider">
                         <FileText className="w-3.5 h-3.5 text-zinc-400" /> Bio
@@ -200,7 +192,6 @@ export default function ProfilePage() {
                       )}
                     </div>
 
-                    {/* Skills */}
                     <div>
                       <label className="flex items-center gap-1.5 text-xs font-bold text-zinc-900 mb-3 uppercase tracking-wider">
                         <Target className="w-3.5 h-3.5 text-zinc-400" /> Skills Offered
@@ -229,7 +220,6 @@ export default function ProfilePage() {
           </div>
         </motion.div>
 
-        {/* Stats */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
           <h2 className="text-sm font-bold text-zinc-900 uppercase tracking-wider mb-4">Your Stats</h2>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -240,7 +230,6 @@ export default function ProfilePage() {
           </div>
         </motion.div>
 
-        {/* Cancel */}
         {isEditing && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-6 text-center">
             <Button

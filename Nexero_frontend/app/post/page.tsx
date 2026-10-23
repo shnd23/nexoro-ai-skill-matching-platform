@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -62,7 +62,6 @@ export default function PostGigPage() {
     <div className="bg-[#f7f4f0] min-h-[calc(100vh-56px)] w-full py-12">
       <div className="max-w-6xl mx-auto px-4">
 
-        {/* Header */}
         <div className="mb-10">
           <p className="text-xs font-semibold uppercase tracking-widest text-[#92400e] mb-3">New Request</p>
           <h1 className="text-4xl font-bold text-zinc-900 tracking-tight mb-2">Post a Gig.</h1>
@@ -72,11 +71,10 @@ export default function PostGigPage() {
         </div>
 
         <div className="grid lg:grid-cols-5 gap-8">
-          {/* Form */}
+
           <div className="lg:col-span-3">
             <form onSubmit={handleSubmit} className="space-y-6 bg-white border border-[#e2ddd5] p-7 rounded-2xl shadow-sm">
 
-              {/* Title */}
               <div>
                 <label className="block text-sm font-semibold text-zinc-900 mb-2">
                   Title <span className="text-red-400">*</span>
@@ -93,7 +91,6 @@ export default function PostGigPage() {
                 <p className="text-xs text-zinc-400 mt-1.5">{title.length}/120 characters</p>
               </div>
 
-              {/* Description */}
               <div>
                 <label className="block text-sm font-semibold text-zinc-900 mb-2">
                   Description <span className="text-red-400">*</span>
@@ -109,7 +106,6 @@ export default function PostGigPage() {
                 <p className="text-xs text-zinc-400 mt-1.5">{description.length}/2000 characters</p>
               </div>
 
-              {/* Required Skills */}
               <div>
                 <label className="block text-sm font-semibold text-zinc-900 mb-2">
                   Required Skills <span className="text-red-400">*</span>
@@ -124,7 +120,6 @@ export default function PostGigPage() {
                 </div>
               </div>
 
-              {/* Budget & Timeframe */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold text-zinc-900 mb-2">Budget (optional)</label>
@@ -155,7 +150,6 @@ export default function PostGigPage() {
                 </div>
               </div>
 
-              {/* Submit */}
               <Button
                 type="submit"
                 disabled={submitting || !title || !description}
@@ -176,7 +170,6 @@ export default function PostGigPage() {
             </form>
           </div>
 
-          {/* Live Preview */}
           <div className="lg:col-span-2">
             <div className="sticky top-20">
               <div className="flex items-center gap-2 mb-3">

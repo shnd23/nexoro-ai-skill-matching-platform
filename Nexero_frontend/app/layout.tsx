@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth-context";
@@ -32,7 +32,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Google Identity Services — loads the GIS library for "Continue with Google" */}
+
         <script src="https://accounts.google.com/gsi/client" async defer />
       </head>
       <body className={cn(inter.variable, outfit.variable, "font-sans antialiased min-h-screen bg-[#f7f4f0] text-zinc-900")}>

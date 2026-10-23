@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -8,8 +8,6 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { GoogleSignInButton } from '@/components/GoogleSignInButton';
-
-
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -25,7 +23,7 @@ export default function LoginPage() {
     setError('');
     setLoading(true);
     try {
-      await login(email, password); // throws on bad credentials
+      await login(email, password);
       router.push('/feed');
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Invalid email or password.');
@@ -38,18 +36,13 @@ export default function LoginPage() {
     <div className="min-h-[calc(100vh-56px)] w-full flex items-center justify-center p-4 bg-[#f7f4f0]">
       <div className="w-full max-w-sm">
 
-        {/* Logo mark */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-zinc-900 mb-5">
-            <span className="text-sm font-black text-white leading-none">N</span>
-          </div>
           <h1 className="text-2xl font-bold text-zinc-900 tracking-tight mb-1.5">Welcome back</h1>
           <p className="text-sm text-zinc-500 font-light">Sign in to your Nexero account.</p>
         </div>
 
         <div className="bg-white border border-[#e2ddd5] rounded-2xl p-7 shadow-sm space-y-5">
 
-          {/* Google Sign-In */}
           <GoogleSignInButton onError={(msg) => setError(msg)} />
 
           <div className="flex items-center gap-3">
@@ -58,7 +51,6 @@ export default function LoginPage() {
             <Separator className="flex-1 bg-[#e2ddd5]" />
           </div>
 
-          {/* Email form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-xs font-semibold text-zinc-700 mb-1.5">Email</label>
@@ -81,7 +73,7 @@ export default function LoginPage() {
                 onChange={e => setPassword(e.target.value)}
                 required
                 className="bg-[#faf8f5] border-[#e2ddd5] focus-visible:ring-zinc-900 h-10 rounded-xl text-sm shadow-none"
-                placeholder="••••••••"
+                placeholder="********"
               />
             </div>
 

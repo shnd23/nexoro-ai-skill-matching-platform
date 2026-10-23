@@ -1,4 +1,4 @@
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using GigMarketplace.Api.DTOs.GigRequests;
 using GigMarketplace.Api.DTOs.Matches;
 using GigMarketplace.Api.DTOs.Skills;
@@ -39,7 +39,6 @@ public class GigRequestsController : ControllerBase
     {
         var userId = GetUserId();
 
-        // Validate skills exist
         var skills = await _skillRepo.GetByIdsAsync(request.RequiredSkillIds);
         if (skills.Count != request.RequiredSkillIds.Count)
             return BadRequest(new { message = "One or more skill IDs are invalid." });
@@ -59,7 +58,6 @@ public class GigRequestsController : ControllerBase
 
         await _gigRepo.CreateAsync(gigRequest);
 
-        // Trigger matching
         var candidates = await _matchingService.FindCandidatesAsync(gigRequest);
         if (candidates.Count > 0)
         {
@@ -72,7 +70,6 @@ public class GigRequestsController : ControllerBase
             await _matchRepo.CreateRangeAsync(matches);
         }
 
-        // Reload with navigation properties
         var created = await _gigRepo.GetByIdAsync(gigRequest.Id);
         return CreatedAtAction(nameof(GetById), new { id = gigRequest.Id }, MapToResponse(created!));
     }
@@ -99,7 +96,7 @@ public class GigRequestsController : ControllerBase
         var userId = GetUserId();
         var gig = await _gigRepo.GetByIdAsync(id);
         if (gig == null) return NotFound();
-        if (gig.AuthorId != userId) return Forbid(); // only the author can see candidates
+        if (gig.AuthorId != userId) return Forbid();
 
         var matches = await _matchRepo.GetByGigRequestIdAsync(id);
         var result = matches

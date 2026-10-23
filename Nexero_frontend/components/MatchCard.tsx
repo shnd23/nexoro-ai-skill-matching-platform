@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import { Check, X, Zap, Award } from 'lucide-react';
@@ -22,7 +22,7 @@ export function MatchCard({ match, onAccept, onDecline }: MatchCardProps) {
   return (
     <Card className="bg-white border-zinc-200 hover:shadow-sm transition-shadow rounded-2xl">
       <CardContent className="p-4 flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-        {/* Candidate Info */}
+
         <div className="flex items-center gap-3 flex-1 min-w-0">
           <Avatar className="h-10 w-10 border border-zinc-200">
             <AvatarFallback className="bg-zinc-100 text-xs text-zinc-700 font-semibold">
@@ -48,7 +48,6 @@ export function MatchCard({ match, onAccept, onDecline }: MatchCardProps) {
           </div>
         </div>
 
-        {/* Status / Actions */}
         <div className="shrink-0 w-full sm:w-auto flex justify-end">
           {isActionable ? (
             <div className="flex items-center gap-2 w-full sm:w-auto">

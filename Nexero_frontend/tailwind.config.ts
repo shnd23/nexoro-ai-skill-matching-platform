@@ -1,4 +1,4 @@
-import type { Config } from "tailwindcss"
+﻿import type { Config } from "tailwindcss"
 
 const config = {
   darkMode: ["class"],
@@ -89,8 +89,8 @@ const config = {
         "fade-in-up": "fade-in-up 0.5s ease-out forwards",
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        display: ['Outfit', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-outfit)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-outfit)', 'system-ui', 'sans-serif'],
       },
       letterSpacing: {
         tightest: "-0.04em",

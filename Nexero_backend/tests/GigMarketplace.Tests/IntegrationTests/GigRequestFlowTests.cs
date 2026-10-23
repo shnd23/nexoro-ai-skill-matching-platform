@@ -1,4 +1,4 @@
-using GigMarketplace.Domain.Entities;
+﻿using GigMarketplace.Domain.Entities;
 using GigMarketplace.Domain.Enums;
 using GigMarketplace.Domain.Interfaces;
 using GigMarketplace.Infrastructure.Data;
@@ -9,10 +9,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GigMarketplace.Tests.IntegrationTests;
 
-/// <summary>
-/// Full integration test: register users → add skills → post gig → verify matches → accept → verify status cascade.
-/// Uses an in-memory database so no Postgres needed.
-/// </summary>
 public class GigRequestFlowTests : IDisposable
 {
     private readonly AppDbContext _db;
@@ -41,7 +37,7 @@ public class GigRequestFlowTests : IDisposable
     [Fact]
     public async Task FullFlow_CreateGig_MatchesAppear_AcceptCascadesStatus()
     {
-        // ─── 1. Create users ───────────────────────────
+
         var alice = new User
         {
             Id = Guid.NewGuid(),
@@ -58,21 +54,17 @@ public class GigRequestFlowTests : IDisposable
         };
         _db.Users.AddRange(alice, bob);
 
-        // ─── 2. Create skills ──────────────────────────
         var react = await _skillRepo.CreateAsync(new Skill { Name = "React" });
         var ts = await _skillRepo.CreateAsync(new Skill { Name = "TypeScript" });
         var python = await _skillRepo.CreateAsync(new Skill { Name = "Python" });
 
-        // ─── 3. Bob adds skills ────────────────────────
         await _userRepo.AddUserSkillAsync(new UserSkill { UserId = bob.Id, SkillId = react.Id });
         await _userRepo.AddUserSkillAsync(new UserSkill { UserId = bob.Id, SkillId = ts.Id });
 
-        // Verify Bob has 2 skills
         var bobWithSkills = await _userRepo.GetByIdWithSkillsAsync(bob.Id);
         Assert.NotNull(bobWithSkills);
         Assert.Equal(2, bobWithSkills!.SkillsOffered.Count);
 
-        // ─── 4. Alice posts a gig ──────────────────────
         var gigRequest = new GigRequest
         {
             AuthorId = alice.Id,
@@ -89,13 +81,11 @@ public class GigRequestFlowTests : IDisposable
         var createdGig = await _gigRepo.CreateAsync(gigRequest);
         Assert.Equal(GigRequestStatus.Open, createdGig.Status);
 
-        // ─── 5. Run matching ───────────────────────────
         var candidates = await _matchingService.FindCandidatesAsync(createdGig);
         Assert.Single(candidates);
         Assert.Equal(bob.Id, candidates[0].UserId);
-        Assert.Equal(1.0f, candidates[0].Score); // 2/2 skills match
+        Assert.Equal(1.0f, candidates[0].Score);
 
-        // Create match rows (simulating what the controller does)
         var matches = candidates.Select(c => new Match
         {
             GigRequestId = createdGig.Id,
@@ -104,23 +94,19 @@ public class GigRequestFlowTests : IDisposable
         });
         await _matchRepo.CreateRangeAsync(matches);
 
-        // ─── 6. Verify Bob's feed ──────────────────────
         var bobFeed = await _matchRepo.GetByCandidateUserIdAsync(bob.Id, MatchStatus.Suggested);
         Assert.Single(bobFeed);
         Assert.Equal(createdGig.Id, bobFeed[0].GigRequestId);
         Assert.Equal(MatchStatus.Suggested, bobFeed[0].Status);
 
-        // ─── 7. Bob accepts the match ──────────────────
         var match = bobFeed[0];
         match.Status = MatchStatus.Accepted;
         await _matchRepo.UpdateAsync(match);
 
-        // Verify match status updated
         var updatedMatch = await _matchRepo.GetByIdAsync(match.Id);
         Assert.NotNull(updatedMatch);
         Assert.Equal(MatchStatus.Accepted, updatedMatch!.Status);
 
-        // ─── 8. Cascade gig status to Matched ──────────
         var gig = await _gigRepo.GetByIdAsync(createdGig.Id);
         Assert.NotNull(gig);
         gig!.Status = GigRequestStatus.Matched;
@@ -129,7 +115,6 @@ public class GigRequestFlowTests : IDisposable
         var finalGig = await _gigRepo.GetByIdAsync(createdGig.Id);
         Assert.Equal(GigRequestStatus.Matched, finalGig!.Status);
 
-        // ─── 9. Verify Bob no longer sees Suggested ────
         var emptyFeed = await _matchRepo.GetByCandidateUserIdAsync(bob.Id, MatchStatus.Suggested);
         Assert.Empty(emptyFeed);
     }
@@ -152,7 +137,6 @@ public class GigRequestFlowTests : IDisposable
             RequiredSkills = new List<GigRequestSkill> { new() { SkillId = skill.Id } }
         });
 
-        // Create match
         await _matchRepo.CreateAsync(new Match
         {
             GigRequestId = gig.Id,
@@ -160,12 +144,10 @@ public class GigRequestFlowTests : IDisposable
             Score = 1.0f
         });
 
-        // Bob declines
         var match = (await _matchRepo.GetByCandidateUserIdAsync(bob.Id, MatchStatus.Suggested)).First();
         match.Status = MatchStatus.Declined;
         await _matchRepo.UpdateAsync(match);
 
-        // Gig should still be Open (decline doesn't cascade)
         var finalGig = await _gigRepo.GetByIdAsync(gig.Id);
         Assert.Equal(GigRequestStatus.Open, finalGig!.Status);
     }

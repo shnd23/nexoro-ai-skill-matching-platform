@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Search, Plus, X } from 'lucide-react';
@@ -27,7 +27,6 @@ export function SkillPicker({
   const containerRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Close dropdown on outside click
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
@@ -38,7 +37,6 @@ export function SkillPicker({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Debounced search — waits 250ms after the user stops typing before hitting the API
   const search = useCallback((q: string) => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
@@ -52,7 +50,7 @@ export function SkillPicker({
     debounceRef.current = setTimeout(async () => {
       try {
         const data = await skillsApi.search(q);
-        // Filter out already-selected skills
+
         setResults(data.filter(s => !selected.some(sel => sel.id === s.id)));
       } catch {
         setResults([]);
@@ -69,7 +67,6 @@ export function SkillPicker({
     search(q);
   }
 
-  // Can the user create a new skill from the current query?
   const canCreateNew =
     query.trim().length > 1 &&
     !results.some(s => s.name.toLowerCase() === query.trim().toLowerCase()) &&
@@ -87,11 +84,11 @@ export function SkillPicker({
   async function createAndAdd() {
     if (!canCreateNew) return;
     try {
-      // POST /api/skills — returns existing skill if name already exists
+
       const created = await skillsApi.createOrGet(query.trim());
       addSkill({ id: created.id, name: created.name });
     } catch {
-      // Fallback: create a local skill with a temp ID (will fail on submit if API is down)
+
       addSkill({ id: `temp_${Date.now()}`, name: query.trim() });
     }
   }
@@ -104,7 +101,7 @@ export function SkillPicker({
 
   return (
     <div ref={containerRef} className="relative">
-      {/* Selected Skills */}
+
       {selected.length > 0 && (
         <div className="flex flex-wrap gap-2 mb-3">
           {selected.map(skill => (
@@ -118,7 +115,6 @@ export function SkillPicker({
         </div>
       )}
 
-      {/* Search Input */}
       <div className="relative">
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
         <input
@@ -141,7 +137,6 @@ export function SkillPicker({
         )}
       </div>
 
-      {/* Dropdown */}
       {showDropdown && (
         <div className="absolute top-full left-0 right-0 mt-2 glass-strong rounded-xl overflow-hidden shadow-2xl z-20 border border-white/10">
           <div className="max-h-60 overflow-y-auto py-1">

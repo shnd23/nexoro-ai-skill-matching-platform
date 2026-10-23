@@ -1,4 +1,4 @@
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using GigMarketplace.Api.DTOs.Auth;
@@ -62,11 +62,6 @@ public class AuthController : ControllerBase
         return Ok(GenerateAuthResponse(user));
     }
 
-    /// <summary>
-    /// Google Sign-In: accepts a Google ID token from the frontend,
-    /// validates it with Google's servers, finds or creates the user,
-    /// and returns our own JWT — same format as email/password login.
-    /// </summary>
     [HttpPost("google")]
     public async Task<ActionResult<AuthResponse>> GoogleLogin([FromBody] GoogleLoginRequest request)
     {
@@ -74,7 +69,6 @@ public class AuthController : ControllerBase
         if (string.IsNullOrEmpty(clientId))
             return StatusCode(501, new { message = "Google sign-in is not configured. Set Google:ClientId in appsettings." });
 
-        // Validate the Google ID token against Google's public keys
         GoogleJsonWebSignature.Payload payload;
         try
         {
@@ -88,7 +82,6 @@ public class AuthController : ControllerBase
             return BadRequest(new { message = "Invalid Google token." });
         }
 
-        // Extract user info from Google's verified payload
         var email = payload.Email;
         var displayName = payload.Name ?? email;
         var avatarUrl = payload.Picture;
@@ -96,11 +89,10 @@ public class AuthController : ControllerBase
         if (string.IsNullOrEmpty(email))
             return BadRequest(new { message = "Google account has no email address." });
 
-        // Find or create user
         var user = await _userManager.FindByEmailAsync(email);
         if (user == null)
         {
-            // First-time Google login — create a new account (no password needed)
+
             user = new User
             {
                 UserName = email,
@@ -120,15 +112,13 @@ public class AuthController : ControllerBase
         }
         else if (!user.IsExternalLogin)
         {
-            // Existing email/password user signing in with Google for the first time
-            // Link them — set the flag and update avatar if they don't have one
+
             user.IsExternalLogin = true;
             if (string.IsNullOrEmpty(user.AvatarUrl))
                 user.AvatarUrl = avatarUrl;
             await _userManager.UpdateAsync(user);
         }
 
-        // Issue our standard JWT — downstream code has no idea this was Google auth
         return Ok(GenerateAuthResponse(user));
     }
 

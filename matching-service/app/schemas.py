@@ -1,32 +1,22 @@
-from pydantic import BaseModel
-
-
-# ── POST /embed ────────────────────────────────────────────────────────────────
+﻿from pydantic import BaseModel
 
 class EmbedRequest(BaseModel):
     text: str
 
-
 class EmbedResponse(BaseModel):
     embedding: list[float]
 
-
-# ── POST /rank ─────────────────────────────────────────────────────────────────
-
 class Candidate(BaseModel):
     user_id: str
-    profile_text: str   # concatenated bio + skill names sent by the .NET backend
-
+    profile_text: str
 
 class RankRequest(BaseModel):
-    query_text: str           # GigRequest title + description
+    query_text: str
     candidates: list[Candidate]
-
 
 class RankedCandidate(BaseModel):
     user_id: str
-    similarity: float         # cosine similarity, 0.0 – 1.0
-
+    similarity: float
 
 class RankResponse(BaseModel):
-    results: list[RankedCandidate]   # sorted descending by similarity
+    results: list[RankedCandidate]

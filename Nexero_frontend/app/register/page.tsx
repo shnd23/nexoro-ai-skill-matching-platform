@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -8,8 +8,6 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { GoogleSignInButton } from '@/components/GoogleSignInButton';
-
-
 
 export default function RegisterPage() {
   const [name, setName] = useState('');
@@ -30,7 +28,7 @@ export default function RegisterPage() {
     }
     setLoading(true);
     try {
-      await register(email, password, name); // throws on failure
+      await register(email, password, name);
       router.push('/feed');
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Registration failed. Please try again.');
@@ -43,18 +41,13 @@ export default function RegisterPage() {
     <div className="min-h-[calc(100vh-56px)] w-full flex items-center justify-center p-4 bg-[#f7f4f0]">
       <div className="w-full max-w-sm">
 
-        {/* Logo mark */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-zinc-900 mb-5">
-            <span className="text-sm font-black text-white leading-none">N</span>
-          </div>
           <h1 className="text-2xl font-bold text-zinc-900 tracking-tight mb-1.5">Create your account</h1>
           <p className="text-sm text-zinc-500 font-light">Join Nexero to find your perfect gig match.</p>
         </div>
 
         <div className="bg-white border border-[#e2ddd5] rounded-2xl p-7 shadow-sm space-y-5">
 
-          {/* Google Sign-In */}
           <GoogleSignInButton onError={(msg) => setError(msg)} />
 
           <div className="flex items-center gap-3">
@@ -63,7 +56,6 @@ export default function RegisterPage() {
             <Separator className="flex-1 bg-[#e2ddd5]" />
           </div>
 
-          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-xs font-semibold text-zinc-700 mb-1.5">Full Name</label>
@@ -95,7 +87,7 @@ export default function RegisterPage() {
                 onChange={e => setPassword(e.target.value)}
                 required
                 className="bg-[#faf8f5] border-[#e2ddd5] focus-visible:ring-zinc-900 h-10 rounded-xl text-sm shadow-none"
-                placeholder="••••••••"
+                placeholder="********"
               />
               <p className="text-[11px] text-zinc-400 mt-1.5">Minimum 8 characters.</p>
             </div>

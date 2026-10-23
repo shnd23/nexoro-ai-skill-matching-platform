@@ -1,4 +1,4 @@
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using GigMarketplace.Api.DTOs.Feed;
 using GigMarketplace.Api.DTOs.GigRequests;
 using GigMarketplace.Api.DTOs.Skills;
@@ -20,16 +20,11 @@ public class FeedController : ControllerBase
 
     private Guid GetUserId() => Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
-    /// <summary>
-    /// Returns matches for the current user.
-    /// Optional ?status=Suggested|Accepted|Declined — omit for all.
-    /// </summary>
     [HttpGet]
     public async Task<ActionResult<List<FeedItemResponse>>> GetFeed([FromQuery] string? status = null)
     {
         var userId = GetUserId();
 
-        // If a status filter is provided, parse it; otherwise return ALL matches
         List<GigMarketplace.Domain.Entities.Match> matches;
         if (!string.IsNullOrEmpty(status) && Enum.TryParse<MatchStatus>(status, true, out var parsedStatus))
         {
@@ -37,7 +32,7 @@ public class FeedController : ControllerBase
         }
         else
         {
-            // Return all statuses by fetching each and combining
+
             var suggested = await _matchRepo.GetByCandidateUserIdAsync(userId, MatchStatus.Suggested);
             var accepted  = await _matchRepo.GetByCandidateUserIdAsync(userId, MatchStatus.Accepted);
             var declined  = await _matchRepo.GetByCandidateUserIdAsync(userId, MatchStatus.Declined);

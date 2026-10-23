@@ -1,6 +1,8 @@
-# Nexero
+﻿# Nexero
 
-**A full-stack AI-powered gig marketplace.** Users post what they need, the platform matches them with people whose skills fit — using a hybrid ranking engine that blends tag overlap with semantic similarity from a fine-tuned SBERT model.
+![Nexero](docs/preview.png)
+
+**A full-stack AI-powered gig marketplace.** Users post what they need, the platform matches them with people whose skills fit, using a hybrid ranking engine that blends tag overlap with semantic similarity from a fine-tuned SBERT model.
 
 Built with production-grade architecture across three separate services: a .NET REST API following Clean Architecture, a Python FastAPI ML inference microservice, and a Next.js frontend. Orchestrated with Docker Compose.
 
@@ -8,46 +10,17 @@ Built with production-grade architecture across three separate services: a .NET 
 
 ## Architecture
 
-```
-                  ┌─────────────────────────────────────────────────────────────────┐
-                  │                        Browser (Next.js)                        │
-                  │                    TypeScript · Tailwind CSS                    │
-                  │       Auth Context · Typed API Client · Server Components       │
-                  └────────────────────────────────┬────────────────────────────────┘
-                                                  │ HTTP (proxied via Next.js rewrite)
-                                                  ▼
-                  ┌─────────────────────────────────────────────────────────────────┐
-                  │                        .NET 10 REST API                         │
-                  │                  Clean Architecture (3 layers)                  │
-                  │                                                                 │
-                  │    Domain             Infrastructure            Api             │
-                  │    ─────────          ──────────────────        ─────           │
-                  │    Entities           EF Core (Postgres)        Controllers     │
-                  │    Interfaces         ASP.NET Identity          JWT Auth        │
-                  │    Records            Repositories              Google OAuth    │
-                  │                       HybridMatchingService     Swagger         │
-                  └──────────┬───────────────────────────────────────────┬──────────┘
-                            │ POST /rank (HTTP JSON)                    │ SQL
-                            ▼                                           ▼
-                  ┌─────────────────────┐                     ┌─────────────────────┐
-                  │   Python FastAPI    │                     │    PostgreSQL 16    │
-                  │  Matching Service   │                     │                     │
-                  │                     │                     │  Users              │
-                  │  SBERT Embeddings   │                     │  GigRequests        │
-                  │  Cosine Similarity  │                     │  Skills             │
-                  │  384-dim vectors    │                     │  Matches            │
-                  └─────────────────────┘                     └─────────────────────┘
-```
+![Nexero architecture](docs/architecture.svg)
 
 ### How matching works
 
 When a GigRequest is posted:
-1. **Tag-overlap retrieval** — SQL query finds all users with at least one matching skill tag (`O(n)` query, runs in milliseconds)
-2. **Semantic re-ranking** — the shortlist is sent to the Python service, which embeds the GigRequest description and every candidate's profile using `all-MiniLM-L6-v2`, then computes cosine similarity
-3. **Score blending** — final score = `0.4 × tag_overlap + 0.6 × semantic_similarity`
-4. **Graceful degradation** — if the ML service is unreachable (timeout: 10s), the system automatically falls back to tag-overlap-only ranking. The platform keeps working; it just degrades gracefully
+1. **Tag-overlap retrieval**: SQL query finds all users with at least one matching skill tag (`O(n)` query, runs in milliseconds)
+2. **Semantic re-ranking**: the shortlist is sent to the Python service, which embeds the GigRequest description and every candidate's profile using `all-MiniLM-L6-v2`, then computes cosine similarity
+3. **Score blending**: final score = `0.4 × tag_overlap + 0.6 × semantic_similarity`
+4. **Graceful degradation**: if the ML service is unreachable (timeout: 10s), the system automatically falls back to tag-overlap-only ranking. The platform keeps working; it just degrades gracefully
 
-This means a user who describes themselves as a "frontend engineer who loves component architecture" will match a GigRequest asking for a "React developer" — even if they've never written the word "React" in their tags.
+This means a user who describes themselves as a "frontend engineer who loves component architecture" will match a GigRequest asking for a "React developer", even if they've never written the word "React" in their tags.
 
 ---
 
@@ -70,10 +43,10 @@ This means a user who describes themselves as a "frontend engineer who loves com
 
 The ML inference service is its own process for concrete reasons:
 
-- **Different runtime requirements** — `sentence-transformers` needs Python's ML ecosystem. There's no good .NET equivalent that's as fast or as well-maintained
-- **Different scaling characteristics** — the API is I/O-bound; ML inference is CPU-bound. Separate processes can be scaled independently
-- **Swappable** — replacing `all-MiniLM-L6-v2` with a larger model, or swapping SBERT for an OpenAI embedding API, requires zero changes to the .NET backend. The contract is a JSON POST
-- **Testable in isolation** — the ML service has its own pytest suite that verifies semantic quality independently of the rest of the system
+- **Different runtime requirements**: `sentence-transformers` needs Python's ML ecosystem. There's no good .NET equivalent that's as fast or as well-maintained
+- **Different scaling characteristics**: the API is I/O-bound; ML inference is CPU-bound. Separate processes can be scaled independently
+- **Swappable**: replacing `all-MiniLM-L6-v2` with a larger model, or swapping SBERT for an OpenAI embedding API, requires zero changes to the .NET backend. The contract is a JSON POST
+- **Testable in isolation**: the ML service has its own pytest suite that verifies semantic quality independently of the rest of the system
 
 The .NET backend treats the ML service as a pure function: send text in, get scores back.
 
@@ -128,7 +101,7 @@ nexero/
 ### 1. Start infrastructure
 
 ```bash
-# From the repo root — starts Postgres + ML service
+# From the repo root: starts Postgres + ML service
 docker compose up --build
 ```
 
@@ -216,17 +189,17 @@ tests/test_ranker.py::test_rank_sorted_descending                           PASS
 
 ## Key Engineering Decisions
 
-**Clean Architecture in the backend** — Domain has zero dependencies on infrastructure. Swapping EF Core for Dapper, or PostgreSQL for SQL Server, requires touching only the Infrastructure layer. The Domain layer defines interfaces; Infrastructure implements them. This is the pattern used at scale in enterprise .NET.
+**Clean Architecture in the backend**: Domain has zero dependencies on infrastructure. Swapping EF Core for Dapper, or PostgreSQL for SQL Server, requires touching only the Infrastructure layer. The Domain layer defines interfaces; Infrastructure implements them. This is the pattern used at scale in enterprise .NET.
 
-**Model loaded once at startup, not per request** — Loading `all-MiniLM-L6-v2` takes ~3 seconds and uses ~90MB of RAM. Per-request loading would make the service unusably slow. The model is a module-level singleton, initialized when the Python process starts, and reused across all requests.
+**Model loaded once at startup, not per request**: Loading `all-MiniLM-L6-v2` takes ~3 seconds and uses ~90MB of RAM. Per-request loading would make the service unusably slow. The model is a module-level singleton, initialized when the Python process starts, and reused across all requests.
 
-**Stateless ML service** — The matching service holds no database connection, no session state, no user data. It receives text, returns numbers. This makes it trivially horizontally scalable — run 10 instances behind a load balancer with no coordination needed.
+**Stateless ML service**: The matching service holds no database connection, no session state, no user data. It receives text, returns numbers. This makes it trivially horizontally scalable: run 10 instances behind a load balancer with no coordination needed.
 
-**Hybrid scoring** — Pure semantic similarity underweights explicit skill tags that users deliberately set. Pure tag overlap misses candidates with relevant experience but slightly different vocabulary. The 40/60 blend captures both signals, with semantic weighted higher because it generalizes better.
+**Hybrid scoring**: Pure semantic similarity underweights explicit skill tags that users deliberately set. Pure tag overlap misses candidates with relevant experience but slightly different vocabulary. The 40/60 blend captures both signals, with semantic weighted higher because it generalizes better.
 
-**JWT + stateless auth** — No server-side sessions. The token carries the user ID and is verified on every request using HMAC-SHA256. This scales horizontally — any backend instance can serve any request without shared session state.
+**JWT + stateless auth**: No server-side sessions. The token carries the user ID and is verified on every request using HMAC-SHA256. This scales horizontally, since any backend instance can serve any request without shared session state.
 
-**Google OAuth via GIS** — The frontend uses Google Identity Services to get an ID token from Google's servers. The token is then validated by the .NET backend using `Google.Apis.Auth` (verifies the signature against Google's public keys). No OAuth redirect flows, no session state, same JWT response shape as email/password login.
+**Google OAuth via GIS**: The frontend uses Google Identity Services to get an ID token from Google's servers. The token is then validated by the .NET backend using `Google.Apis.Auth` (verifies the signature against Google's public keys). No OAuth redirect flows, no session state, same JWT response shape as email/password login.
 
 ---
 

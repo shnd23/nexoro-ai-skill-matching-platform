@@ -1,10 +1,8 @@
-'use client';
+﻿'use client';
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { User } from './types';
 import { auth, users, getToken, setToken, clearToken, ApiUser } from './api';
-
-// ─── Types ────────────────────────────────────────────────────────────────────
 
 interface AuthState {
   user: User | null;
@@ -20,9 +18,6 @@ interface AuthContextType extends AuthState {
   updateUser: (updates: Partial<User>) => void;
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-/** Convert the backend's ApiUser shape → the frontend's User shape */
 function apiUserToUser(apiUser: ApiUser): User {
   return {
     id: apiUser.id,
@@ -39,8 +34,6 @@ function apiUserToUser(apiUser: ApiUser): User {
   };
 }
 
-// ─── Context ──────────────────────────────────────────────────────────────────
-
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const USER_CACHE_KEY = 'nexero_user_cache';
@@ -52,7 +45,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     isLoading: true,
   });
 
-  // On mount: if a JWT is in localStorage, verify it by calling /users/me
   useEffect(() => {
     async function rehydrate() {
       const token = getToken();
@@ -61,14 +53,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      // Try to use a cached user for instant render, then verify
       try {
         const cached = localStorage.getItem(USER_CACHE_KEY);
         if (cached) {
           const cachedUser = JSON.parse(cached) as User;
           setState({ user: cachedUser, isAuthenticated: true, isLoading: true });
         }
-      } catch { /* ignore */ }
+      } catch {  }
 
       try {
         const apiUser = await users.me();
@@ -76,7 +67,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         localStorage.setItem(USER_CACHE_KEY, JSON.stringify(user));
         setState({ user, isAuthenticated: true, isLoading: false });
       } catch {
-        // Token is expired or invalid → clear it
+
         clearToken();
         localStorage.removeItem(USER_CACHE_KEY);
         setState({ user: null, isAuthenticated: false, isLoading: false });
@@ -86,9 +77,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     rehydrate();
   }, []);
 
-  // login throws on failure so the caller can show the real error message
   const login = useCallback(async (email: string, password: string): Promise<boolean> => {
-    const response = await auth.login(email, password); // throws on bad credentials
+    const response = await auth.login(email, password);
     setToken(response.token);
     const apiUser = await users.me();
     const user = apiUserToUser(apiUser);
@@ -97,16 +87,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return true;
   }, []);
 
-  // register throws on failure so the caller can show the real error message
   const register = useCallback(async (
     email: string,
     password: string,
     displayName: string
   ): Promise<boolean> => {
-    const response = await auth.register(email, password, displayName); // throws on error
+    const response = await auth.register(email, password, displayName);
     setToken(response.token);
 
-    // Fetch full profile after registration
     const apiUser = await users.me();
     const user = apiUserToUser(apiUser);
     localStorage.setItem(USER_CACHE_KEY, JSON.stringify(user));
@@ -114,9 +102,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return true;
   }, []);
 
-  // Google sign-in — throws on failure
   const googleLogin = useCallback(async (idToken: string): Promise<boolean> => {
-    const response = await auth.googleLogin(idToken); // throws on error
+    const response = await auth.googleLogin(idToken);
     setToken(response.token);
     const apiUser = await users.me();
     const user = apiUserToUser(apiUser);
@@ -131,7 +118,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setState({ user: null, isAuthenticated: false, isLoading: false });
   }, []);
 
-  // Optimistic local update — the caller is responsible for persisting to the API
   const updateUser = useCallback((updates: Partial<User>) => {
     setState(prev => {
       if (!prev.user) return prev;

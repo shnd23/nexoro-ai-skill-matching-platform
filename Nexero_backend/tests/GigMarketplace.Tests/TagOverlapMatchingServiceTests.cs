@@ -1,4 +1,4 @@
-using GigMarketplace.Domain.Entities;
+﻿using GigMarketplace.Domain.Entities;
 using GigMarketplace.Domain.Interfaces;
 using GigMarketplace.Infrastructure.Data;
 using GigMarketplace.Infrastructure.Services;
@@ -58,14 +58,12 @@ public class TagOverlapMatchingServiceTests : IDisposable
     {
         var (author, candidate, s1, s2, _) = await SeedAsync();
 
-        // Candidate has React + TypeScript
         _db.UserSkills.AddRange(
             new UserSkill { UserId = candidate.Id, SkillId = s1.Id },
             new UserSkill { UserId = candidate.Id, SkillId = s2.Id }
         );
         await _db.SaveChangesAsync();
 
-        // Gig requires React + TypeScript
         var gig = new GigRequest
         {
             AuthorId = author.Id,
@@ -92,11 +90,9 @@ public class TagOverlapMatchingServiceTests : IDisposable
     {
         var (author, candidate, s1, s2, s3) = await SeedAsync();
 
-        // Candidate has React only
         _db.UserSkills.Add(new UserSkill { UserId = candidate.Id, SkillId = s1.Id });
         await _db.SaveChangesAsync();
 
-        // Gig requires React + TypeScript
         var gig = new GigRequest
         {
             AuthorId = author.Id,
@@ -124,11 +120,9 @@ public class TagOverlapMatchingServiceTests : IDisposable
         var s1 = _db.Skills.First(s => s.Name == "React");
         var s2 = _db.Skills.First(s => s.Name == "TypeScript");
 
-        // Candidate has Python only
         _db.UserSkills.Add(new UserSkill { UserId = candidate.Id, SkillId = s3.Id });
         await _db.SaveChangesAsync();
 
-        // Gig requires React + TypeScript
         var gig = new GigRequest
         {
             AuthorId = author.Id,
@@ -153,14 +147,12 @@ public class TagOverlapMatchingServiceTests : IDisposable
     {
         var (author, _, s1, s2, _) = await SeedAsync();
 
-        // Author has the skills too
         _db.UserSkills.AddRange(
             new UserSkill { UserId = author.Id, SkillId = s1.Id },
             new UserSkill { UserId = author.Id, SkillId = s2.Id }
         );
         await _db.SaveChangesAsync();
 
-        // Gig by author requires React + TypeScript
         var gig = new GigRequest
         {
             AuthorId = author.Id,
@@ -177,7 +169,6 @@ public class TagOverlapMatchingServiceTests : IDisposable
 
         var results = await _service.FindCandidatesAsync(gig);
 
-        // Author should NOT appear as their own candidate
         Assert.DoesNotContain(results, r => r.UserId == author.Id);
     }
 
@@ -218,7 +209,6 @@ public class TagOverlapMatchingServiceTests : IDisposable
         };
         _db.Users.Add(candidate2);
 
-        // candidate has React only (0.5), candidate2 has React+TypeScript (1.0)
         _db.UserSkills.Add(new UserSkill { UserId = candidate.Id, SkillId = s1.Id });
         _db.UserSkills.AddRange(
             new UserSkill { UserId = candidate2.Id, SkillId = s1.Id },
@@ -243,7 +233,7 @@ public class TagOverlapMatchingServiceTests : IDisposable
         var results = await _service.FindCandidatesAsync(gig);
 
         Assert.Equal(2, results.Count);
-        Assert.Equal(candidate2.Id, results[0].UserId); // Higher score first
+        Assert.Equal(candidate2.Id, results[0].UserId);
         Assert.Equal(1.0f, results[0].Score);
         Assert.Equal(candidate.Id, results[1].UserId);
         Assert.Equal(0.5f, results[1].Score);

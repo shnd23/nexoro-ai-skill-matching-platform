@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
@@ -24,14 +24,12 @@ export default function MyGigsPage() {
   const [expandedGig, setExpandedGig] = useState<string | null>(null);
   const [fetching, setFetching] = useState(true);
 
-  // Redirect if not logged in
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       router.push('/login');
     }
   }, [isLoading, isAuthenticated, router]);
 
-  // Fetch my posted gigs and my matches in parallel
   useEffect(() => {
     if (!isAuthenticated) return;
     setFetching(true);
@@ -44,9 +42,8 @@ export default function MyGigsPage() {
     }).finally(() => setFetching(false));
   }, [isAuthenticated]);
 
-  // When a gig row is expanded, fetch its candidates
   const loadGigMatches = useCallback(async (gigId: string) => {
-    if (gigMatchesMap[gigId]) return; // already loaded
+    if (gigMatchesMap[gigId]) return;
     try {
       const data = await gigsApi.getMatchesForGig(gigId);
       setGigMatchesMap(prev => ({ ...prev, [gigId]: data }));
@@ -67,7 +64,7 @@ export default function MyGigsPage() {
   async function handleAccept(matchId: string) {
     try {
       await matchesApi.accept(matchId);
-      // Update local match status
+
       setGigMatchesMap(prev => {
         const updated = { ...prev };
         for (const gigId in updated) {
@@ -113,7 +110,6 @@ export default function MyGigsPage() {
     );
   }
 
-  // Convert ApiFeedItem → GigCard-compatible shape
   function toGigCardGig(item: ApiFeedItem) {
     const g = item.gigRequest;
     return {
@@ -130,12 +126,11 @@ export default function MyGigsPage() {
     };
   }
 
-  // Convert ApiMatch → MatchCard-compatible shape
   function toMatchCardMatch(m: ApiMatch) {
     return {
       id: m.id,
       gigRequestId: m.gigRequestId,
-      gigRequest: {} as never, // MatchCard only uses match.id / status / score / candidateUser
+      gigRequest: {} as never,
       candidateUserId: m.candidateUserId,
       candidateUser: {
         id: m.candidateUserId,
@@ -156,7 +151,6 @@ export default function MyGigsPage() {
     <div className="bg-[#f7f4f0] min-h-[calc(100vh-56px)] w-full py-12">
       <div className="max-w-4xl mx-auto px-4">
 
-        {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest text-[#92400e] mb-3">Dashboard</p>
@@ -191,7 +185,6 @@ export default function MyGigsPage() {
             </TabsTrigger>
           </TabsList>
 
-          {/* Posted Tab */}
           <TabsContent value="posted" className="space-y-3 mt-0 outline-none">
             {myGigs.length === 0 ? (
               <div className="bg-white border border-[#e2ddd5] border-dashed rounded-2xl p-16 text-center">
@@ -272,7 +265,6 @@ export default function MyGigsPage() {
             )}
           </TabsContent>
 
-          {/* Matched to Me Tab */}
           <TabsContent value="matched" className="space-y-3 mt-0 outline-none">
             {myMatches.length === 0 ? (
               <div className="bg-white border border-[#e2ddd5] border-dashed rounded-2xl p-16 text-center">
